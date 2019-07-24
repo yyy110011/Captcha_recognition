@@ -5,9 +5,8 @@ from keras.layers import Input, Dense, Dropout, Flatten, Conv2D, MaxPooling2D
 from keras.layers.normalization import BatchNormalization
 
 from base.base_model import BaseModel
-from config import config
 
-class simple_captcha_model(BaseModel):
+class SimpleCaptchaModel(BaseModel):
     def __init__(self, config):
         super(captcha_model, self).__init__(config)
         self.build_model()
