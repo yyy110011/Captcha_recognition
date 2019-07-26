@@ -6,9 +6,9 @@ from keras.layers.normalization import BatchNormalization
 
 from base.base_model import BaseModel
 
-class SimpleCaptchaModel(BaseModel):
+class CircleCaptchaModel(BaseModel):
     def __init__(self, config):
-        super(SimpleCaptchaModel, self).__init__(config)
+        super(CircleCaptchaModel, self).__init__(config)
         self.build_model()
 
     def build_model(self):#, loss='categorical_crossentropy', optimizer='Adamax', metrics=['accuracy']):
@@ -43,18 +43,25 @@ class SimpleCaptchaModel(BaseModel):
             tensor_out = Flatten()(tensor_out)
             tensor_out = Dropout(0.5)(tensor_out)
 
+            circle1 = Dense(3, name='circle1', activation='softmax')(tensor_out)
+            circle2 = Dense(3, name='circle2', activation='softmax')(tensor_out)
+            circle3 = Dense(3, name='circle3', activation='softmax')(tensor_out)
+            circle4 = Dense(3, name='circle4', activation='softmax')(tensor_out)
+
             digit_1 = Dense(10, name='digit1', activation='softmax')(tensor_out)
 
             digit_2 = keras.layers.concatenate([digit_1, Dense(10, activation='relu')(tensor_out)]) 
             digit_2 = Dense(10, name='digit2', activation='softmax')(digit_2)
 
             digit_3 = keras.layers.concatenate([digit_1, digit_2, Dense(10, activation='relu')(tensor_out)]) 
-            digit_3 = Dense(10, name='digit3', activation='softmax')(digit_3)
+            digit_3 = Dense(10, name='digit3', activation='softmax')(digit_3) 
 
-            digit_4 = keras.layers.concatenate([digit_1, digit_2 , digit_3, Dense(10, activation='relu')(tensor_out)]) 
+            digit_4 = keras.layers.concatenate([digit_1, digit_2 , digit_3, Dense(10, activation='relu')(tensor_out), circle1, circle2, circle3, circle4]) 
             digit_4 = Dense(10, name='digit4', activation='softmax')(digit_4)
 
-            tensor_out = [digit_1, digit_2, digit_3, digit_4]
+            tensor_out = [digit_1, digit_2, digit_3, digit_4, circle1, circle2, circle3, circle4]
+            #tensor_out = [circle1, circle2, circle3, circle4]
+
 
             self.model = Model(inputs=tensor_in, outputs=tensor_out)
         self.model.compile(loss=self.config.loss, optimizer=self.config.optimizer, metrics=self.config.metrics)
